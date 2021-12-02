@@ -1,5 +1,23 @@
 {
   "dependencies": {
     "firebase-admin": "^10.0.0"
-  }
+  },
+  "name": "api",
+  "description": "Api used for accessing data stored in the database",
+  "version": "1.0.0",
+  "devDependencies": {},
+  "scripts": {
+    "deploy": "func azure functionapp publish codechef-api"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codechef-mpstme/api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codechef-mpstme/api/issues"
+  },
+  "homepage": "https://github.com/codechef-mpstme/api#readme"
 }

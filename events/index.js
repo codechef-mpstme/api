@@ -12,37 +12,47 @@ module.exports = async function (context, req) {
     let limit = 0;
     req.body?.limit && typeof(limit) == "number" && req.body.limit > 0 && (limit = req.body.limit);
 
-    const snapshot = await database.collection("events").orderBy("date-time").get();
+    const snapshot = await database.collection("events").orderBy("timestamp").get();
     let docs = snapshot.docs;
     let index = docs.length;
     for (const [i, doc] of docs.entries()) {
-        if (doc.data()["date-time"] > Timestamp.now()) {
+        if (doc.data()["timestamp"] > Timestamp.now()) {
             index = i;
             break;
         }
     }
 
-    let old = docs.slice(0, index).map(doc => [doc.id, {
-        venue: doc.data().venue,
-        date: new Date(doc.data()["date-time"]._seconds * 1000).getDate(),
-        month: new Date(doc.data()["date-time"]._seconds * 1000).getMonth(),
-        year: new Date(doc.data()["date-time"]._seconds * 1000).getFullYear(),
-        hour: new Date(doc.data()["date-time"]._seconds * 1000).getHours(),
-        minutes: new Date(doc.data()["date-time"]._seconds * 1000).getMinutes(),
-        name: doc.data().name,
-        image: doc.data().image
-    }]);
-    
-    let upcoming = docs.slice(index).map(doc => [doc.id, {
-        venue: doc.data().venue,
-        date: new Date(doc.data()["date-time"]._seconds * 1000).getDate(),
-        month: new Date(doc.data()["date-time"]._seconds * 1000).getMonth(),
-        year: new Date(doc.data()["date-time"]._seconds * 1000).getFullYear(),
-        hour: new Date(doc.data()["date-time"]._seconds * 1000).getHours(),
-        minutes: new Date(doc.data()["date-time"]._seconds * 1000).getMinutes(),
-        name: doc.data().name,
-        image: doc.data().image
-    }]);
+    let old = docs.slice(0, index).map(doc => {
+        let date = new Date(doc.data()["timestamp"].seconds * 1000);
+        let data = doc.data();
+        return {
+            date: date.getDate(),
+            month: date.getMonth() + 1,
+            year: date.getFullYear(),
+            hour: date.getHours(),
+            minutes: date.getMinutes(),
+            venue: data.venue,
+            name: data.name,
+            image: data.image,
+            description: data.description
+        }
+    })
+
+    let upcoming = docs.slice(index).map(doc => {
+        let date = new Date(doc.data()["timestamp"].seconds * 1000);
+        let data = doc.data();
+        return {
+            date: date.getDate(),
+            month: date.getMonth() + 1,
+            year: date.getFullYear(),
+            hour: date.getHours(),
+            minutes: date.getMinutes(),
+            venue: data.venue,
+            name: data.name,
+            image: data.image,
+            description: data.description
+        }
+    })
     
     if (limit) {
         old = old.slice(-limit)
